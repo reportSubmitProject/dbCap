@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.report.mapper.ProfessorNoticeMapper">
+
+    <select id="list" resultType="ProfessorNotice">
+        <bind name="start" value="(pagination.pg - 1) * pagination.sz" />
+        SELECT p.*
+    	FROM professor_notice p
+        WHERE lecture_no = #{lecture_no}
+        order by notice_no DESC
+        LIMIT #{start}, #{pagination.sz}
+    </select>
+    
+    <select id="studentlist" resultMap="resultMap_ProfessorNotice">
+        <bind name="start" value="(pagination.pg - 1) * pagination.sz" />
+        SELECT p.*, h.grade, h.ranking, h.file_size
+    	FROM professor_notice p
+    	LEFT JOIN homework h ON h.professornotice_no = p.notice_no
+        WHERE lecture_no = #{lecture_no}
+        AND h.student_no = #{student_no}
+        order by notice_no DESC
+        LIMIT #{start}, #{pagination.sz}
+    </select>
+    
+    
+    <resultMap id="resultMap_ProfessorNotice" type="ProfessorNotice">
+    	<id property="notice_no" column="notice_no"/>
+    	<result property="title" column="title"/>
+    	<result property="deadline" column="deadline"/>
+    	<result property="deadline_add" column="deadline_add"/>
+    	<result property="perfect_score" column="perfect_score"/>
+    	<association property="homework" javaType="Homework">
+    		<id property="hw_no" column="hw_no"/>
+    		<result property="grade" column="grade"/>
+    		<result property="ranking" column="ranking"/>
+    		<result property="file_size" column="file_size"/>
+    	</association>
+    </resultMap>
+    
+    <select id="count" resultType="int">
+    	SELECT count(*)
+        FROM professor_notice 
+        WHERE lecture_no = #{lecture_no}
+    </select>
+
+    <select id="findOne" resultType="ProfessorNotice">
+        SELECT *
+        FROM professor_notice 
+        WHERE notice_no = #{notice_no}
+    </select>
+    
+    <select id="findByOne" resultType="ProfessorNotice">
+        SELECT *
+        FROM professor_notice 
+        WHERE title = #{title}
+    </select>
+    
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="notice_no">
+        INSERT professor_notice(lecture_no, professor_no, header, title, content, submitdate, deadline, deadline_add, perfect_score)
+        VALUES (#{lecture_no}, #{professor_no}, "과제 및 공지", #{title}, #{content}, now(), #{deadline}, #{deadline_add}
+        , #{perfect_score})
+    </insert>
+
+	<update id="update">
+        UPDATE professor_notice
+        SET title = #{title}
+        ,content = #{content}
+        ,perfect_score = #{perfect_score}
+        ,submitdate = date_format(now(), '%Y-%m-%d')
+        ,deadline = #{deadline}
+        ,deadline_add = #{deadline_add}
+        WHERE notice_no = #{notice_no}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM professor_notice
+        WHERE notice_no = #{notice_no}
+    </delete>
+    
+ 
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.report.mapper.LecturefileMapper">
+
+	<select id="findByNo" resultType="Lecturefile">
+		SELECT * FROM LectureFile WHERE no = #{no}
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="no">
+		INSERT LectureFile (file_name, file_size, file_time, data, lecture_no, header)
+		VALUES ( #{file_name}, #{file_size}, #{file_time}, #{data}, #{lecture_no}, "강의 자료")
+	</insert>
+	
+	<delete id="deleteByNo">
+		DELETE FROM LectureFile WHERE no = #{no}
+	</delete>
+	  
+	<select id="findAll" resultType="Lecturefile">
+		<bind name="start" value="(pagination.pg - 1) * pagination.sz" />
+		SELECT L.*
+		FROM LectureFile L <!-- LEFT JOIN Lecture le ON L.lecture_no = le.lecture_no -->
+		WHERE L.lecture_no= #{id}
+		LIMIT #{start}, #{pagination.sz}
+	</select>
+	
+	<select id="count" resultType="int">
+		SELECT count(*)
+		FROM LectureFile <!-- LEFT JOIN Lecture le ON L.lecture_no = le.lecture_no -->
+		WHERE lecture_no= #{id}
+	</select>
+</mapper>

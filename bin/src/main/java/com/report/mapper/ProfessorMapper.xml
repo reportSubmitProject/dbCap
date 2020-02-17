@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.report.mapper.ProfessorMapper">
+
+	<select id="findOne" resultType="Professor">
+		SELECT * FROM Professor WHERE professor_no = #{professor_no}
+	</select>
+
+	<select id="findByProfessorName" resultType="Professor">
+		SELECT * FROM Professor WHERE professor_name = #{name}
+	</select>
+	
+	
+	<select id="findByProfessorLecture1" resultType="Lecture">
+		SELECT l.* FROM professor p
+		join professor_lecture pl on p.professor_no = pl.professor_no and p.id=#{id}
+		join lecture l on pl.lecture_no = l.lecture_no and l.lecture_type = "전공";
+	</select>
+	
+	<select id="findByProfessorLecture2" resultType="Lecture">
+		SELECT l.* FROM professor p
+		join professor_lecture pl on p.professor_no = pl.professor_no and p.id=#{id}
+		join lecture l on pl.lecture_no = l.lecture_no and l.lecture_type = "교양";
+	</select>
+	
+	<select id="findByProfessorId" resultType="Professor">
+		SELECT p.*
+        FROM Professor p 
+        JOIN department d on p.department_no = d.department_no
+        WHERE p.id = #{id};
+	</select>
+
+	<select id="findAll" resultType="Professor">
+		SELECT p.*, d.departmentName
+		FROM Professor p LEFT JOIN department d ON p.department_no = d.department_no
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="professor_no">
+		INSERT Professor (id, name, professor_phone, professor_email, password1, password2, department_no, userType)
+		VALUES ( #{id}, #{name}, #{professor_phone}, #{professor_email}, #{password1}, #{password2}, #{department_no}, '교수')
+	</insert>
+
+	<update id="update">
+		UPDATE Professor SET
+		id = #{id},
+		name = #{name},
+		professor_phone = #{professor_phone},
+		professor_email = #{professor_email},
+		password1 = #{password1},
+		password2 = #{password2}
+		WHERE professor_no = #{professor_no}
+	</update>
+
+	<delete id="delete">
+		DELETE FROM Professor WHERE professor_no = #{professor_no}
+	</delete>
+	
+	<update id="taUpdate">
+		UPDATE Professor SET
+		ta_no = #{ta_no}
+		WHERE professor_no = #{professor_no}
+	</update>
+
+
+	<select id="findBytaNO" resultType="Lecture">
+		SELECT l.* FROM professor p
+		join professor_lecture pl on p.professor_no = pl.professor_no and p.id=#{id}
+		join lecture l on pl.lecture_no = l.lecture_no and l.ta_no IS NULL;
+	</select>
+	
+	<select id="findBytaYES" resultType="Lecture">
+		SELECT l.* FROM professor p
+		join professor_lecture pl on p.professor_no = pl.professor_no and p.id=#{id}
+		join lecture l on pl.lecture_no = l.lecture_no and l.ta_no IS NOT NULL;
+	</select>
+	
+	<select id="findByTa" resultType="Professor">
+		SELECT p.*
+		FROM professor p
+		JOIN ta t ON p.ta_no = t.ta_no and p.ta_no = #{ta_no};
+	</select>
+</mapper>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.report.mapper.TimelineMapper" >
+
+	<select id="findAllByStudent" resultMap="resultMap_Student">
+		<bind name="start" value="(pagination.pg - 1) * pagination.sz" />
+		SELECT l.lecture_name, pn.title, pn.submitdate, pn.notice_no, header
+		FROM student_lecture sl 
+		JOIN lecture l on sl.lecture_no = l.lecture_no and sl.student_no = #{student_no}
+		JOIN professor_notice pn on l.lecture_no = pn.lecture_no
+
+		UNION ALL
+		
+		SELECT l.lecture_name, lf.file_name, lf.file_time, lf.no, header
+		FROM student_lecture sl 
+		JOIN lecture l on sl.lecture_no = l.lecture_no and sl.student_no = #{student_no}
+		JOIN lecturefile lf on l.lecture_no = lf.lecture_no
+		
+		ORDER BY submitdate DESC 
+		LIMIT #{start}, #{pagination.sz}
+	</select>
+	
+	<select id="countByStudent" resultType="int">
+		SELECT	COUNT(*)
+		FROM(
+			SELECT l.lecture_name, pn.title, pn.submitdate
+			FROM student_lecture sl 
+			JOIN lecture l on sl.lecture_no = l.lecture_no and sl.student_no = #{student_no}
+			JOIN professor_notice pn on l.lecture_no = pn.lecture_no
+		
+			UNION ALL
+		
+			SELECT l.lecture_name, lf.file_name, lf.file_time
+			FROM student_lecture sl 
+			JOIN lecture l on sl.lecture_no = l.lecture_no and sl.student_no = #{student_no}
+			JOIN lecturefile lf on l.lecture_no = lf.lecture_no
+		
+			ORDER BY submitdate DESC 
+		) AS tem
+	</select>
+	
+	<resultMap id="resultMap_Student" type="StudentLecture">
+		<id property="student_lecture_no" column="student_lecture_no"/>
+		<result property="lecture_name" column="lecture_name"/>
+		<result property="title" column="title"/>
+		<result property="file_name" column="file_name"/>	
+		<result property="notice_no" column="notice_no"/>	
+		<result property="studentnotice_no" column="studentnotice_no"/>	
+		<result property="no" column="no"/>	
+		<result property="header" column="header"/>	
+	</resultMap>
+	
+	<select id="findAllByProfessor" resultMap="resultMap_Professor">
+		<bind name="start" value="(pagination.pg - 1) * pagination.sz" />
+		SELECT l.lecture_name, sn.title, sn.submitdate, sn.studentnotice_no, header
+		FROM professor_lecture fl 
+		JOIN lecture l on fl.lecture_no = l.lecture_no and fl.professor_no = ${professor_no}
+		JOIN student_notice sn on l.lecture_no = sn.lecture_no
+		
+		ORDER BY submitdate DESC 
+	</select>
+	
+	<select id="countByProfessor" resultType="int">
+		SELECT	COUNT(*)
+		FROM(
+			SELECT l.lecture_name, sn.title, sn.submitdate, sn.studentnotice_no, header
+			FROM professor_lecture fl 
+			JOIN lecture l on fl.lecture_no = l.lecture_no and fl.professor_no = ${professor_no}
+			JOIN student_notice sn on l.lecture_no = sn.lecture_no
+		
+			ORDER BY submitdate DESC 
+       	 ) AS tem
+	</select>
+	
+	<resultMap id="resultMap_Professor" type="ProfessorLecture">
+		<id property="professor_lecture_no" column="professor_lecture_no"/>
+		<result property="lecture_name" column="lecture_name"/>
+		<result property="title" column="title"/>
+		<result property="studentnotice_no" column="studentnotice_no"/>	
+	</resultMap>
+	
+	
+	
+	<select id="findAllByTa" resultMap="resultMap_Ta">
+		<bind name="start" value="(pagination.pg - 1) * pagination.sz" />
+		SELECT l.lecture_name, pn.title, pn.submitdate, pn.notice_no, header
+		FROM lecture l
+		JOIN professor_notice pn on l.lecture_no = pn.lecture_no and l.ta_no = ${ta_no}
+
+		
+		UNION ALL
+		
+		SELECT l.lecture_name, lf.file_name, lf.file_time, lf.no, header
+		FROM lecture l
+		JOIN lecturefile lf on l.lecture_no = lf.lecture_no and l.ta_no = ${ta_no}
+		
+		ORDER BY submitdate DESC 
+		LIMIT #{start}, #{pagination.sz}
+	</select>
+	
+	<select id="countByTa" resultType="int">
+	SELECT	COUNT(*)
+	FROM(
+		SELECT l.lecture_name, pn.title, pn.submitdate, pn.notice_no, header
+		FROM lecture l
+		JOIN professor_notice pn on l.lecture_no = pn.lecture_no and l.ta_no = ${ta_no}
+		
+		UNION ALL
+		
+		SELECT l.lecture_name, lf.file_name, lf.file_time, lf.no, header
+		FROM lecture l
+		JOIN lecturefile lf on l.lecture_no = lf.lecture_no and l.ta_no = ${ta_no}
+        
+		ORDER BY submitdate DESC 
+	) AS tem
+	</select>
+	
+	<resultMap id="resultMap_Ta" type="Lecture">
+		<id property="lecture_no" column="lecture_no"/>
+		<result property="lecture_name" column="lecture_name"/>
+		<result property="title" column="title"/>
+		<result property="file_name" column="file_name"/>	
+		<result property="notice_no" column="notice_no"/>	
+		<result property="studentnotice_no" column="studentnotice_no"/>	
+		<result property="no" column="no"/>	
+		<result property="header" column="header"/>	
+	</resultMap>
+	
+</mapper>

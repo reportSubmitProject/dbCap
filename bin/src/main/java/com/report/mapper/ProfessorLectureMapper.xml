@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+      "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.report.mapper.ProfessorLectureMapper">
+
+   <select id="findOne" resultType="ProfessorLecture">
+      SELECT * FROM Professor_Lecture
+      WHERE lecture_no = #{lecture_no}
+   </select>
+   <select id="findByProfessorNo" resultType="ProfessorLecture">
+	  SELECT * FROM ProfessorLecture
+	  FROM Professor_Lecture pl LEFT JOIN professor p ON pl.professor_no = p.no
+      WHERE professor_no = #{professor_no}
+	</select>
+	
+    <select id="findByLectureNo" resultType="ProfessorLecture">
+	  SELECT * FROM ProfessorLecture
+	  FROM Professor_Lecture pl LEFT JOIN lecture l ON l.lecture_no = p.no
+      WHERE lecture_no = #{lecture_no}
+	</select>
+	
+	<insert id="insert" useGeneratedKeys="true" keyProperty="professor_lecture_no">
+		INSERT Professor_Lecture (professor_no, lecture_no)
+		VALUES (#{professor_no}, #{lecture_no})
+	</insert>
+	
+</mapper>

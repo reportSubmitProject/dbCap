@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.report.mapper.StudentNoticeMapper">
+
+    <select id="list" resultType="StudentNotice">
+    SELECT sn.studentnotice_no, sn.title, s.name, sn.submitdate
+    FROM student_notice sn
+    LEFT JOIN student s ON sn.student_no = s.student_no
+    WHERE lecture_no = #{lecture_no}
+    order by sn.studentnotice_no desc
+ </select>
+ 	
+ <select id="count" resultType="int">
+ SELECT (*)
+    FROM student_notice sn
+    LEFT JOIN student s ON sn.student_no = s.student_no
+    WHERE lecture_no = #{lecture_no}
+ </select>
+
+    <select id="listWithStudentName" resultMap="resultMap1">
+    <bind name="start" value="(pagination.pg - 1) * pagination.sz" />
+        SELECT sn.studentnotice_no, sn.title, s.name, sn.submitdate
+        FROM student_notice sn
+        LEFT JOIN student s ON sn.student_no = s.student_no
+        WHERE lecture_no = #{lecture_no}
+        order by sn.studentnotice_no desc
+        LIMIT #{start}, #{pagination.sz}
+    </select>
+
+    <resultMap id="resultMap1" type="StudentNotice">
+        <id property="studentnotice_no" column="studentnotice_no" />
+        <result property="title" column="title"/>
+        <result property="submitdate" column="submitdate"/>
+        <association property="student" javaType="Student">
+            <id property="student_no" column="student_no"/>
+            <result property="name" column="name" />
+        </association>
+    </resultMap>
+
+
+
+    <select id="findOne" resultMap="resultMap2">
+    SELECT *, s.name
+    FROM student_notice sn
+    LEFT JOIN student s ON sn.student_no = s.student_no
+    WHERE studentnotice_no = #{studentnotice_no}
+ </select>
+
+    <resultMap id="resultMap2" type="StudentNotice">
+        <id property="studentnotice_no" column="studentnotice_no"/>
+        <result property="lecture_no" column="lecture_no"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="submitdate" column="submitdate"/>
+        <association property="student" javaType="Student">
+            <id property="student_no" column="student_no"/>
+            <result property="name" column="name"/>
+        </association>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="studentnotice_no">
+    INSERT student_notice(title, content, student_no, submitdate, lecture_no, header)
+    VALUES (#{title}, #{content}, #{student_no}, date_format(now(), '%Y-%m-%d'), #{lecture_no}, "학생 게시판")
+ </insert>
+
+    <update id="update">
+    UPDATE student_notice
+    SET title = #{title},
+    content = #{content},
+    submitdate = date_format(now(), '%Y-%m-%d')
+    WHERE studentnotice_no = #{studentnotice_no}
+</update>
+
+    <delete id="delete">
+    DELETE FROM student_notice
+    WHERE studentnotice_no = #{studentnotice_no}
+</delete>
+</mapper>

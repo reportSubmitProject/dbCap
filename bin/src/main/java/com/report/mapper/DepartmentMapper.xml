@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.report.mapper.DepartmentMapper">
+	
+	<select id="findAll" resultType="Department">
+		SELECT * FROM Department
+	</select>
+
+	<select id="findByDepartmentNo" resultType="Department">
+	SELECT * FROM Department WHERE department_no = #{department_no}
+	</select>
+</mapper>

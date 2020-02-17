@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.report.mapper.AuthorityMapper">
+
+	<select id="findOne" resultType="Authority">
+		SELECT * FROM Authority WHERE Authority_no = #{authority_no}
+	</select>
+
+	<select id="findByStudent_authority" resultType="Authority">
+		SELECT * FROM Authority WHERE Student_authority = #{Student_authority}
+	</select>
+	<select id="findByProfessor_authority" resultType="Authority">
+		SELECT * FROM Authority WHERE Professor_authority = #{professor_authority}
+	</select>
+	<select id="findByTa_authority" resultType="Authority">
+		SELECT * FROM Authority WHERE Ta_authority = #{ta_authority}
+	</select>
+	
+</mapper>

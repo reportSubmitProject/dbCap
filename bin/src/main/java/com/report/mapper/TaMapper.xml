@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.report.mapper.TaMapper">
+    <select id="findAll" resultType="Ta">
+		SELECT * FROM TA
+	</select>
+	
+	 <select id="findOne" resultType="Ta">
+    SELECT * FROM TA WHERE ta_no = #{ta_no}
+  </select>
+	
+	<insert id="insert" useGeneratedKeys="true" keyProperty="ta_no">
+		INSERT TA (ta_id, password)
+		VALUES (#{ta_id}, #{password})
+	</insert>
+
+	<update id="update">
+		UPDATE TA SET
+		ta_id = #{ta_id},
+		password = #{password}
+		where ta_no = #{ta_no}
+	</update>
+
+	<delete id="delete">
+		DELETE FROM TA WHERE ta_no = #{ta_no}
+	</delete>
+	
+	<select id="findByTaId" resultType="Ta">
+    SELECT * FROM TA WHERE ta_id = #{ta_id}
+  	</select> 
+  	
+  
+</mapper>

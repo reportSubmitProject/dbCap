@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.report.mapper.UploadedFileMapper">
+
+	<select id="findByNo" resultType="UploadedFile">
+		SELECT * FROM UploadedFile WHERE no = #{no}
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="no">
+		INSERT UploadedFile (file_name, file_size, file_time, data, lecture_no)
+		VALUES ( #{file_name}, #{file_size}, #{file_time}, #{data}, #{lecture_no})
+	</insert>
+	
+	<delete id="deleteByNo">
+		DELETE FROM UploadedFile WHERE no = #{no}
+	</delete>
+	  
+	<select id="findAllInPosting" resultType="UploadedFile">
+		SELECT * FROM UploadedFile
+		WHERE lecture_no=#{id}
+	</select>
+	
+</mapper>

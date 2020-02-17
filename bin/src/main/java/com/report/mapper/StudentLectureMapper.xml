@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+      "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.report.mapper.StudentLectureMapper">
+
+	<select id="findOne" resultType="StudentLecture">
+		SELECT * FROM StudentLecture
+		WHERE student_lecture_no = #{student_lecture_no}
+	</select>
+
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="student_lecture_no">
+		INSERT Student_Lecture (lecture_no, student_no)
+		VALUES (#{lecture_no}, #{student_no})
+	</insert>
+	
+	<delete id="delete">
+		DELETE FROM Student_Lecture WHERE lecture_no=#{lecture_no} and student_no=#{student_no}
+	</delete>
+	
+	<select id="findList" resultType="StudentLecture">
+		SELECT *
+		FROM Student_Lecture
+		WHERE lecture_no = #{lecture_no}
+	</select>
+</mapper>

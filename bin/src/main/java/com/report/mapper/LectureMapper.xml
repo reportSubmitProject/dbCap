@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.report.mapper.LectureMapper">
+
+	<select id="findOne" resultType="Lecture">
+		SELECT * FROM Lecture WHERE lecture_no = #{lecture_no}
+	</select>
+
+	<select id="findByLectureName" resultType="Lecture">
+		SELECT * FROM Lecture WHERE lecture_name = #{lecture_name}
+	</select>
+
+	<select id="findStudentByLectureNo" resultType="Lecture">
+            SELECT l.lecture_no, s.*
+            FROM Lecture l
+            LEFT JOIN Student_lecture sl ON l.lecture_no = sl.lecture_no
+            LEFT JOIN Student s ON sl.student_no = s.student_no
+            WHERE lecture_no = #{lecture_no}
+	</select>
+
+	<select id="findAll" resultType="Lecture">
+		SELECT l.*, t.ta_no
+		FROM Lecture l LEFT JOIN Ta t ON l.ta_no = t.ta_no
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="lecture_no">
+		INSERT Lecture (lecture_name, lecture_type, ta_no)
+		VALUES (#{lecture_name}, #{lecture_type}, #{ta_no})
+	</insert>
+
+	<update id="update">
+		UPDATE Lecture SET
+		lecture_name = #{lecture_name},
+		lecture_type = #{lecture_type},
+		ta_no = #{ta_no},
+		WHERE lecture_no = #{lecture_no}
+	</update>
+
+	<delete id="delete">
+		DELETE FROM Lecture WHERE lecture_no = #{lecture_no}
+	</delete>
+	
+	<update id="taLectureYesUpdate">
+		UPDATE Lecture SET
+		ta_no=#{ta_no}
+		WHERE lecture_no=#{lecture_no}
+	</update>
+	
+	<update id="taLectureNoUpdate">
+		UPDATE Lecture SET
+		ta_no=NULL
+		WHERE lecture_no=#{lecture_no}
+	</update>
+
+	<select id="findByTaLecture" resultType="Lecture">
+		SELECT *
+		FROM Lecture
+		WHERE ta_no = #{ta_no}
+	</select>
+	
+	
+	<select id="findO" resultMap="resultMap_Lecture">
+		SELECT l.*, p.name 
+		FROM lecture l 
+			JOIN professor_lecture pl ON l.lecture_no = pl.lecture_no AND l.lecture_no = #{lecture_no}
+			JOIN professor p ON on pl.professor_no = p.professor_no 
+	</select>
+	
+	<select id="findA" resultMap="resultMap_Lecture">
+		<bind name="start" value="(pagination.pg - 1) * pagination.sz" />
+		SELECT l.*, p.name
+		FROM lecture l 
+		JOIN professor_lecture pl ON l.lecture_no = pl.lecture_no and l.lecture_name not in (select lecture_name from lecture l
+		join student_lecture sl on l.lecture_no = sl.lecture_no
+		join student s on sl.student_no = s.student_no and s.student_no=#{student_no} )
+		JOIN professor p ON pl.professor_no = p.professor_no 
+		ORDER BY l.lecture_no
+		LIMIT #{start}, #{pagination.sz}
+	</select>
+	
+	<select id="findSearch" resultMap="resultMap_Lecture">
+		<bind name="start" value="(pagination.pg - 1) * pagination.sz" />
+		SELECT l.*, p.name
+		FROM lecture l 
+		JOIN professor_lecture pl ON l.lecture_no = pl.lecture_no and l.lecture_name not in (select lecture_name from lecture l
+		join student_lecture sl on l.lecture_no = sl.lecture_no
+		join student s on sl.student_no = s.student_no and s.student_no=#{student_no} )
+		JOIN professor p ON pl.professor_no = p.professor_no 
+		WHERE l.lecture_name LIKE CONCAT('%',#{search},'%')
+		ORDER BY l.lecture_no
+		LIMIT #{start}, #{pagination.sz}
+	</select>
+	
+	<select id="countSearch" resultType="int">
+		SELECT count(*)
+		FROM lecture l 
+		JOIN professor_lecture pl ON l.lecture_no = pl.lecture_no and l.lecture_name not in (select lecture_name from lecture l
+		join student_lecture sl on l.lecture_no = sl.lecture_no
+		join student s on sl.student_no = s.student_no and s.student_no=40 )
+		JOIN professor p ON pl.professor_no = p.professor_no 
+		WHERE l.lecture_name LIKE CONCAT('%','데이터','%')
+	</select>
+	
+	<select id="count" resultType="int">
+		SELECT count(*)
+		FROM lecture l 
+		JOIN professor_lecture pl ON l.lecture_no = pl.lecture_no and l.lecture_name not in (select lecture_name from lecture l
+		join student_lecture sl on l.lecture_no = sl.lecture_no
+		join student s on sl.student_no = s.student_no and s.student_no=#{studnet_no} )
+		JOIN professor p ON pl.professor_no = p.professor_no ;
+	</select>
+	
+	<resultMap id="resultMap_Lecture" type="Lecture">
+		<id property="lecture_no" column="lecture_no"/>
+		<result property="lecture_name" column="lecture_name"/>
+		<association property="professor_lecture" javaType="ProfessorLecture">
+			<id property="professor_lecture_no" column="professor_lecture_no" />		
+			<association property="professor" javaType="Professor">
+				<id property="professor_no" column="professor_no" />
+				<result property="name" column="name"/>
+			</association>
+		</association>
+	</resultMap>
+	
+	
+	<select id="search" resultMap="resultMap_Lecture">
+		SELECT l.lecture_name , p.name
+		FROM lecture l join professor_lecture pl on l.lecture_no = pl.lecture_no
+		join professor p on pl.professor_no = p.professor_no
+		WHERE l.lecture_name LIKE '%#{search}%'
+		
+	</select>
+	
+	
+</mapper>
